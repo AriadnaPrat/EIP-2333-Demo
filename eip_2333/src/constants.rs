@@ -1,2 +1,4 @@
-pub const K: i32 = 32;
-pub const L: i32 = K * 255;
+pub const K: usize = 32;
+pub const L: usize = K * 255usize;
+
+

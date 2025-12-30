@@ -1,14 +1,33 @@
-pub fn bytes_split(input: Vec<u8>, chunk_size: i32) -> Vec<Vec<u8>> {
-    let mut chunks: Vec<Vec<u8>> = Vec::new(); // ahora Vec<Vec<u8>>
-    let total_chunks = input.len() / chunk_size as usize;
+use crate::constants::{K};
+use num_bigint::BigUint;
+use num_traits::Zero;
 
-    for i in 0..total_chunks {
-        let start = i * chunk_size as usize;
-        let end = start + chunk_size as usize;
-
-        let chunk_slice = &input[start..end];
-        chunks.push(chunk_slice.to_vec()); // convierte &[u8] -> Vec<u8>
+pub fn bytes_split(input: &[u8], chunk_size: usize) -> Result<Vec<Vec<u8>>, &'static str> {
+    if input.len() % chunk_size != 0 {
+        return Err("input length not divisible by chunk size");
     }
 
-    chunks
+    assert!(input.len() % K == 0);
+
+    Ok(input
+        .chunks(chunk_size)
+        .map(|c| c.to_vec())
+        .collect())
 }
+
+//Returns bitwise negation of input
+pub fn flip_bits(input: &[u8]) -> BigUint {
+    let x = BigUint::from_bytes_be(input);
+    let bit_len = input.len() * 8;
+
+    let mut result = BigUint::zero();
+
+    for i in 0..bit_len {
+        if !x.bit(i as u64) {
+            result.set_bit(i as u64, true);
+        }
+    }
+
+    result
+}
+
